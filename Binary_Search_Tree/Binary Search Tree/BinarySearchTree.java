@@ -19,24 +19,70 @@ public class BinarySearchTree<T extends Comparable<T>> implements BSTInterface<T
     // Returns true if this BST is empty; otherwise, returns false.
     public boolean isEmpty()
     {
-        return false;
+        return root == null;
     }
 
     // Returns the number of elements in this BST.
     public int size()
     {
-        return -1;
+        return size(root);
+    }
+
+    private int size(BinaryNode<T> tree)
+    {
+        if (tree == null)
+            return 0;
+        return 1 + size(tree.getLeft()) + size(tree.getRight());
     }
 
     // Adds element to this BST. The tree retains its BST property.
     public void add (T element)
     {
+        if (root == null)
+        {
+            root = new BinaryNode<T>(element);
+            return;
+        }
+
+        BinaryNode<T> current = root;
+        while (true)
+        {
+            int comparison = element.compareTo(current.getInfo());
+            if (comparison == 0)
+                return;
+            else if (comparison < 0)
+            {
+                if (current.getLeft() == null)
+                {
+                    current.setLeft(new BinaryNode<T>(element));
+                    return;
+                }
+                current = current.getLeft();
+            }
+            else
+            {
+                if (current.getRight() == null)
+                {
+                    current.setRight(new BinaryNode<T>(element));
+                    return;
+                }
+                current = current.getRight();
+            }
+        }
     }
 
     // Returns true if this BST contains an element e such that 
     // e.compareTo(element) == 0; otherwise, returns false.
     public boolean contains (T element)
     {
+        BinaryNode<T> current = root;
+        while (current != null)
+        {
+            int comparison = element.compareTo(current.getInfo());
+            if (comparison == 0)
+                return true;
+            current = comparison < 0 ? current.getLeft() : current.getRight();
+        }
         return false;
     }
 
