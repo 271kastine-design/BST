@@ -110,7 +110,7 @@ public class BinarySearchTree<T extends Comparable<T>> implements BSTInterface<T
     public List<T> preorderTraverse()
     {
         List<T> tempList = new ArrayList<>();
-        Deque<BinaryNode<T>> stack = new ArrayDeque<>();
+        Stack<BinaryNode<T>> stack = new Stack<>();
         if (root != null)
             stack.push(root);
 
@@ -129,19 +129,87 @@ public class BinarySearchTree<T extends Comparable<T>> implements BSTInterface<T
     // Returns a list of elements from an inorder traversal
     public List<T> inorderTraverse()
     {
-        return null;
+        List<T> tempList = new ArrayList<>();
+        Stack<BinaryNode<T>> stack = new Stack<>();
+        BinaryNode<T> current = root;
+        while (current != null || !stack.isEmpty())
+        {
+            while (current != null)
+            {
+                stack.push(current);
+                current = current.getLeft();
+            }
+            current = stack.pop();
+            tempList.add(current.getInfo());
+            current = current.getRight();
+        }
+        return tempList;
     }
 
     // Returns a list of elements from a postorder traversal
     public List<T> postorderTraverse()
     {
-        return null;
+        List<T> tempList = new ArrayList<>();
+        Stack<BinaryNode<T>> stack = new Stack<>();
+        Stack<BinaryNode<T>> reverseStack = new Stack<>();
+        if (root != null)
+            stack.push(root);
+
+        while (!stack.isEmpty())
+        {
+            BinaryNode<T> current = stack.pop();
+            reverseStack.push(current);
+            if (current.getLeft() != null)
+                stack.push(current.getLeft());
+            if (current.getRight() != null)
+                stack.push(current.getRight());
+        }
+        while (!reverseStack.isEmpty())
+            tempList.add(reverseStack.pop().getInfo());
+        return tempList;
     }
 
-    // Removes an element e from this BST such that e.compareTo(element) == 0
-    public void remove (T element)
-    {
-    }
+	// Removes an element e from this BST such that e.compareTo(element) == 0
+	public void remove(T element)
+	{
+		root = recRemove(element, root);
+	}
+
+	private BinaryNode<T> recRemove(T target, BinaryNode<T> node)
+	{
+		if (node == null)
+			return null;
+
+		int comparison = target.compareTo(node.getInfo());
+		if (comparison < 0)
+			node.setLeft(recRemove(target, node.getLeft()));
+		else if (comparison > 0)
+			node.setRight(recRemove(target, node.getRight()));
+		else
+			return removeNode(node);
+		return node;
+	}
+
+	private BinaryNode<T> removeNode(BinaryNode<T> node)
+	{
+		if (node.getLeft() == null)
+			return node.getRight();
+		if (node.getRight() == null)
+			return node.getLeft();
+
+		T predecessor = getPredecessor(node.getLeft());
+		node.setInfo(predecessor);
+		node.setLeft(recRemove(predecessor, node.getLeft()));
+		return node;
+	}
+
+	public T getPredecessor(BinaryNode<T> subtree)
+	{
+		BinaryNode<T> current = subtree;
+		while (current.getRight() != null)
+			current = current.getRight();
+		return current.getInfo();
+	}
 
     // Restructures this BST to be optimally balanced
     public void balance()
