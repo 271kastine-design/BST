@@ -214,5 +214,20 @@ public class BinarySearchTree<T extends Comparable<T>> implements BSTInterface<T
     // Restructures this BST to be optimally balanced
     public void balance()
     {
+        List<T> elements = inorderTraverse();
+        root = buildBalanced(elements, 0, elements.size() - 1);
     }
+
+    private BinaryNode<T> buildBalanced(List<T> elements, int low, int high)
+    {
+        if (low > high)
+            return null;
+
+        int mid = low + (high - low) / 2;
+        BinaryNode<T> node = new BinaryNode<T>(elements.get(mid));
+        node.setLeft(buildBalanced(elements, low, mid - 1));
+        node.setRight(buildBalanced(elements, mid + 1, high));
+        return node;
+    }
+
 }
